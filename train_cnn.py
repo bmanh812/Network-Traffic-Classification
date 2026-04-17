@@ -4,6 +4,7 @@ from src.data_loader import load_and_preprocess, apply_smote_and_reshape
 from src.models import get_cnn_model
 from src.utils import evaluate_model
 import joblib
+from src.models import focal_loss
 
 # 1. Tải và tiền xử lý dữ liệu
 print("--- [CNN] Bước 1: Đang tải dữ liệu (300k dòng) ---")
@@ -30,12 +31,25 @@ callbacks = [
 # 5. Huấn luyện mô hình
 print("--- [CNN] Bước 3: Bắt đầu huấn luyện ---")
 
+print("--- [CNN] Cấu hình Focal Loss để xử lý dữ liệu mất cân bằng ---")
+model.compile(
+    optimizer='adam',
+    loss=focal_loss(gamma=2.0, alpha=0.25),
+    metrics=['accuracy']
+)
+
+# Chuyển đổi nhãn sang One-hot encoding để khớp với Focal Loss
+y_res_onehot = tf.keras.utils.to_categorical(y_res, num_classes=num_classes)
+
+# Tương tự với tập Validation
 y_test_filtered = [label if label in le_final.classes_ else le_final.classes_[0] for label in y_test]
+y_val_onehot = tf.keras.utils.to_categorical(le_final.transform(y_test_filtered), num_classes=num_classes)
+
 history = model.fit(
-    X_res_3d, y_res,
+    X_res_3d, y_res_onehot,             
     epochs=100,
-    batch_size=128, # CNN có thể chạy batch lớn để tận dụng GPU/CPU
-    validation_data=(X_test_3d, le_final.transform(y_test_filtered)),
+    batch_size=128,
+    validation_data=(X_test_3d, y_val_onehot), 
     callbacks=callbacks,
     verbose=1
 )

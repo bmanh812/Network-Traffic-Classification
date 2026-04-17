@@ -4,6 +4,7 @@ import joblib # Thêm cái này để lưu le_final
 from src.data_loader import load_and_preprocess, apply_smote_and_reshape
 from src.models import get_lstm_model
 from src.utils import evaluate_model, plot_confusion_matrix, plot_training_history
+from src.models import focal_loss
 
 def train(): # <--- PHẢI CÓ HÀM NÀY
     # 1. Tải dữ liệu
@@ -35,12 +36,23 @@ def train(): # <--- PHẢI CÓ HÀM NÀY
     X_test_filtered = X_test_3d[valid_test_mask]
     y_test_filtered = y_test[valid_test_mask] # Đổi thành valid_test_mask cho đồng bộ
 
+    #chuyển đổi sang onehot
+    y_res_onehot = tf.keras.utils.to_categorical(y_res, num_classes=num_classes)
+    y_val_onehot = tf.keras.utils.to_categorical(le_final.transform(y_test_filtered), num_classes=num_classes)
+
+    #focal-loss
+    print("--- Cấu hình Focal Loss cho LSTM ---")
+    model.compile(
+        optimizer='adam', 
+        loss=focal_loss(gamma=2.0, alpha=0.25), 
+        metrics=['accuracy']
+    )
     # Bây giờ mới nạp vào fit
     history = model.fit(
-        X_res_3d, y_res,
+        X_res_3d, y_res_onehot,
         epochs=100,
         batch_size=64,
-        validation_data=(X_test_filtered, le_final.transform(y_test_filtered)),
+        validation_data=(X_test_filtered, y_val_onehot),
         callbacks=callbacks
     )
 
