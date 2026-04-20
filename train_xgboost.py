@@ -18,31 +18,36 @@ def train():
         X_res = X_res.reshape(X_res.shape[0], -1)
         X_test_s = X_test_s.reshape(X_test_s.shape[0], -1)
 
-    print("--- [XGBoost] Bước 2: Huấn luyện với Trọng số lớp (Class Weight) ---")
-    # Đánh số lại nhãn nội bộ cho XGBoost (yêu cầu từ 0 đến n-1)
+    print("--- [XGBoost] Bước 2: Huấn luyện với Trọng số lớp tối ưu ---")
     le_xg = LabelEncoder()
     y_res_encoded = le_xg.fit_transform(y_res)
 
-    # --- TÍNH TOÁN TRỌNG SỐ ĐỂ CỨU NHÃN 0 ĐIỂM ---
+    # 1. Tinh chỉnh trọng số mẫu (Dùng căn bậc 4 thay vì căn bậc 2)
+    # Căn bậc 4 giúp kìm hãm trọng số các nhãn đa số ít hơn nữa, giữ Accuracy cao hơn
     classes = np.unique(y_res_encoded)
-    weights = compute_class_weight(class_weight='balanced', classes=classes, y=y_res_encoded)
-    class_weights_dict = dict(zip(classes, weights))
-    
-    # Áp trọng số cho từng dòng dữ liệu dựa trên nhãn của nó
+    raw_weights = compute_class_weight(class_weight='balanced', classes=classes, y=y_res_encoded)
+    adj_weights = np.power(raw_weights, 0.25) 
+    class_weights_dict = dict(zip(classes, adj_weights))
     sample_weights = np.array([class_weights_dict[i] for i in y_res_encoded])
 
-    # Khởi tạo mô hình với tham số chống Bias
+    # 2. Cấu hình mô hình "Chuyên gia"
     model = XGBClassifier(
-        n_estimators=100,
-        learning_rate=0.1,
-        max_depth=6,
+        n_estimators=500,            # Tăng mạnh số cây để mô hình học sâu hơn
+        learning_rate=0.02,          # Giảm tốc độ học để cực kỳ ổn định
+        max_depth=12,                # Tăng độ sâu để tách biệt các nhãn gần giống nhau
+        min_child_weight=1,          # Cho phép các lá nhỏ hơn tồn tại để cứu nhãn hiếm
+        gamma=0.2,                   # Tăng tính tổng quát hóa
+        subsample=0.8,               # Lấy mẫu ngẫu nhiên dòng để tránh overfitting
+        colsample_bytree=0.7,        # Chỉ lấy 70% đặc trưng cho mỗi cây để giảm nhiễu
         objective='multi:softprob',
-        random_state=42,
         tree_method='hist',
-        max_delta_step=1  # Giúp ổn định việc cập nhật trọng số cho lớp thiểu số
+        max_delta_step=5,            # Tăng lên 5 để dồn lực mạnh cho các nhãn khó
+        reg_alpha=0.1,               # L1 Regularization: Loại bỏ các đặc trưng thừa
+        reg_lambda=1.5,              # L2 Regularization: Làm mượt trọng số
+        random_state=42
     )
 
-    # Huấn luyện với sample_weight
+    # 3. Huấn luyện
     model.fit(X_res, y_res_encoded, sample_weight=sample_weights)
 
     # 3. Lưu mô hình và các bộ mã hóa

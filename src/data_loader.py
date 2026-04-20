@@ -35,7 +35,7 @@ def apply_smote_and_reshape(X_train_scaled, y_train, target_threshold=2000):
     le_final = LabelEncoder()
     y_train_fixed = le_final.fit_transform(y_train)
     
-    # Lọc class ít mẫu và chạy SMOTE (Ô code 5)
+    # Lọc class ít mẫu và chạy SMOTE 
     counts = Counter(y_train_fixed)
     valid_classes = [cls for cls, count in counts.items() if count >= 6]
     mask = np.isin(y_train_fixed, valid_classes)

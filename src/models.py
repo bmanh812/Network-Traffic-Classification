@@ -42,7 +42,7 @@ def get_lstm_model(input_shape, num_classes):
     model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
     return model
 
-#Focal-loss
+#Focal-losspython train_cnn.py
 import tensorflow as tf
 
 def focal_loss(gamma=2.0, alpha=0.25):
