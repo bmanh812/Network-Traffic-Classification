@@ -2,4 +2,5 @@
 data/
 *.csv
 __pycache__/
-.ipynb_checkpoints/
+.ipynb_checkpoints/models/best_xgboost_model.json 
+models/best_xgboost_model.json
