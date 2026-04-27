@@ -2,7 +2,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv1D, MaxPooling1D, Flatten, Dense, Dropout, BatchNormalization, LSTM
 
 def get_cnn_model(input_shape, num_classes):
-    # Lấy đúng kiến trúc em đã tối ưu ở ảnh image_c7536a
+    # Kiến trúc CNN
     model = Sequential([
         Conv1D(128, 7, dilation_rate=2, activation='relu', padding='same', input_shape=input_shape),
         BatchNormalization(),
@@ -26,7 +26,7 @@ def get_cnn_model(input_shape, num_classes):
     return model
 
 def get_lstm_model(input_shape, num_classes):
-    # Lấy kiến trúc LSTM ở Ô code 7
+    # Lấy kiến trúc LSTM
     model = Sequential([
         LSTM(128, return_sequences=True, input_shape=input_shape),
         BatchNormalization(),

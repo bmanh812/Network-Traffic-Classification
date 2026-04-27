@@ -20,7 +20,7 @@ def train(): # <--- PHẢI CÓ HÀM NÀY
     num_classes = len(le_final.classes_)
     model = get_lstm_model(input_shape, num_classes)
 
-    # 4. Callbacks (Patience 15 theo ý Mạnh là rất ổn)
+    # 4. Callbacks 
     callbacks = [
         tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=15, restore_best_weights=True),
         tf.keras.callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=7)
@@ -47,7 +47,7 @@ def train(): # <--- PHẢI CÓ HÀM NÀY
         loss=focal_loss(gamma=2.0, alpha=0.25), 
         metrics=['accuracy']
     )
-    # Bây giờ mới nạp vào fit
+    # nạp vào fit
     history = model.fit(
         X_res_3d, y_res_onehot,
         epochs=100,
@@ -56,9 +56,9 @@ def train(): # <--- PHẢI CÓ HÀM NÀY
         callbacks=callbacks
     )
 
-    # 6. Lưu mô hình và Label Encoder (Rất quan trọng để sau này so sánh)
+    # 6. Lưu mô hình và Label Encoder 
     model.save('models/best_lstm_model.h5')
-    joblib.dump(le_final, 'models/label_encoder_lstm.pkl') # Lưu riêng để Hiếu so sánh
+    joblib.dump(le_final, 'models/label_encoder_lstm.pkl') # Lưu riêng để  so sánh
     print("--- Đã lưu mô hình LSTM thành công! ---")
 
     # 7. Đánh giá và vẽ biểu đồ

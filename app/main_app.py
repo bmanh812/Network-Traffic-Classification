@@ -45,7 +45,7 @@ except Exception as e:
 # --- 3. GIAO DIỆN CHỌN MÔ HÌNH VÀ TẢI FILE ---
 model_choice = st.selectbox(
     "🤖 Chọn mô hình để dự đoán:",
-    ["XGBoost (Accuracy: ~67%)", "CNN 1D (Accuracy: ~69%)", "LSTM (Accuracy: ~66%)"]
+    ["XGBoost (Accuracy: ~67%)", "CNN 1D (Accuracy: ~60%)", "LSTM (Accuracy: ~68%)"]
 )
 
 uploaded_file = st.file_uploader("📂 Tải lên file dữ liệu lưu lượng (.csv)", type=["csv"])

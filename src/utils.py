@@ -19,7 +19,7 @@ def plot_confusion_matrix(y_true, y_pred, target_names, title='Confusion Matrix'
     """
     cm = confusion_matrix(y_true, y_pred)
     plt.figure(figsize=(20, 15))
-    # Vẽ heatmap chuyên nghiệp cho báo cáo Tuần 5
+    # Vẽ heatmap chuyên nghiệp 
     sns.heatmap(cm, annot=False, fmt='d', cmap='Blues', 
                 xticklabels=target_names, yticklabels=target_names)
     plt.title(title)

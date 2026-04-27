@@ -31,7 +31,7 @@ def load_and_preprocess(file_path, sample_size=300000):
     return X_train_scaled, X_test_scaled, y_train, y_test, le, X_train.columns
 
 def apply_smote_and_reshape(X_train_scaled, y_train, target_threshold=2000):
-    # Tái mã hóa nhãn để đảm bảo tính liên tục (Ô code 3)
+    # Tái mã hóa nhãn để đảm bảo tính liên tục 
     le_final = LabelEncoder()
     y_train_fixed = le_final.fit_transform(y_train)
     
@@ -45,6 +45,6 @@ def apply_smote_and_reshape(X_train_scaled, y_train, target_threshold=2000):
     smote = SMOTE(sampling_strategy=sampling_strategy, k_neighbors=3, random_state=42)
     X_res, y_res = smote.fit_resample(X_f, y_f)
     
-    # Reshape 3D cho CNN/LSTM (Ô code 6)
+    # Reshape 3D cho CNN/LSTM 
     X_res_3d = np.expand_dims(X_res, axis=2)
     return X_res_3d, y_res, le_final
