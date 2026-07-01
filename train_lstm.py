@@ -6,7 +6,7 @@ from src.models import get_lstm_model
 from src.utils import evaluate_model, plot_confusion_matrix, plot_training_history
 from src.models import focal_loss
 
-def train(): # <--- PHẢI CÓ HÀM NÀY
+def train(): 
     # 1. Tải dữ liệu
     print("--- Đang chuẩn bị dữ liệu cho LSTM ---")
     X_train_s, X_test_s, y_train, y_test, le, cols = load_and_preprocess('data/Dataset-Unicauca-Version2-87Atts.csv')
@@ -34,7 +34,7 @@ def train(): # <--- PHẢI CÓ HÀM NÀY
 
     # Áp dụng mặt nạ để lọc dữ liệu Test
     X_test_filtered = X_test_3d[valid_test_mask]
-    y_test_filtered = y_test[valid_test_mask] # Đổi thành valid_test_mask cho đồng bộ
+    y_test_filtered = y_test[valid_test_mask] 
 
     #chuyển đổi sang onehot
     y_res_onehot = tf.keras.utils.to_categorical(y_res, num_classes=num_classes)
